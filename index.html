@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeless Store - Мужские часы</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --main-color: #d4af37; /* Золотой */
+            --bg-color: #0f0f0f;
+            --card-bg: #1a1a1a;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--main-color);
+        }
+
+        #catalog {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .product-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #222;
+            transition: transform 0.2s;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 8px 0;
+            height: 34px;
+            overflow: hidden;
+        }
+
+        .price {
+            color: var(--main-color);
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        button {
+            background-color: var(--main-color);
+            color: #000;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+
+        button:active {
+            transform: scale(0.95);
+            opacity: 0.8;
+        }
+
+        /* Заглушка, когда товаров нет */
+        #empty-msg {
+            display: none;
+            margin-top: 50px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>TIMELESS STORE</h1>
+    </header>
+
+    <div id="catalog">
+        <div class="product-card">
+            <img src="https://via.placeholder.com/200x200?text=Watch" alt="Watch">
+            <div class="product-name">Классическая модель</div>
+            <div class="price">15 000 ₽</div>
+            <button onclick="buyProduct('Классическая модель', 15000)">Купить</button>
+        </div>
+    </div>
+
+    <div id="empty-msg">Каталог обновляется...</div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем приложение на весь экран
+
+        // Настройка главной кнопки Telegram
+        tg.MainButton.setParams({
+            text: 'ОФОРМИТЬ ЗАКАЗ',
+            color: '#d4af37',
+            text_color: '#000000'
+        });
+
+        function buyProduct(name, price) {
+            // При нажатии на кнопку "Купить" показываем главную кнопку Telegram
+            tg.MainButton.show();
+            // Можно добавить логику сбора товаров в корзину
+            console.log("Выбрано:", name);
+        }
+
+        // Обработка нажатия на главную кнопку
+        tg.onEvent('mainButtonClicked', function() {
+            tg.sendData("order_clicked"); // Отправляем сигнал боту
+        });
+    </script>
+</body>
+</html>
