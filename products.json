@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "name": "Dulunwe Casino",
+    "price": 10990,
+    "photos": [
+      "https://i.ibb.co/23nDqsB7/image.jpg",
+      "https://i.ibb.co/LhD0pRyw/image.jpg"
+    ]
+  },
+  {
+    "name": "Dulunwe Casino",
+    "price": 10990,
+    "photos": [
+      "https://i.ibb.co/7t1nVcfS/image.jpg",
+      "https://i.ibb.co/bjy8vZt0/image.jpg"
+    ]
+  },
+  {
+    "name": "Dulunwe Casino",
+    "price": 10990,
+    "photos": [
+      "https://i.ibb.co/LDJt4W0R/image.jpg"
+    ]
+  },
+  {
+    "name": "Dulunwe Casino",
+    "price": 10990,
+    "photos": [
+      "https://i.ibb.co/FSYRWnr/image.jpg"
+    ]
+  }
+]
