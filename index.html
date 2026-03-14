@@ -7,50 +7,53 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; background: #000; color: #fff; margin: 0; padding: 15px; }
-        .product-card { background: #1a1a1a; border-radius: 12px; padding: 15px; margin-bottom: 20px; }
-        .photo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 10px; }
-        .photo-grid img { width: 100%; border-radius: 8px; object-fit: cover; aspect-ratio: 1; }
-        h3 { margin: 10px 0; color: #fff; }
-        .price { color: #00d1ff; font-weight: bold; font-size: 1.2em; }
+        .catalog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .product-card { background: #1a1a1a; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; }
+        .photo-container { width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; margin-bottom: 8px; }
+        .photo-container img { width: 100%; height: 100%; object-fit: cover; }
+        h3 { font-size: 0.9em; margin: 5px 0; min-height: 2.4em; }
+        .price { color: #00d1ff; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div id="catalog">Загрузка товаров...</div>
+    <div id="catalog" class="catalog-grid">Загрузка товаров...</div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
         async function loadProducts() {
+            const container = document.getElementById('catalog');
             try {
-                // Добавляем случайное число, чтобы GitHub не выдавал старую версию из кеша
-                const response = await fetch('products.json?v=' + Math.random());
+                // Добавляем случайное число, чтобы не грузить старую версию из кеша
+                const response = await fetch('products.json?nocache=' + Math.random());
                 const products = await response.json();
-                const container = document.getElementById('catalog');
-                container.innerHTML = '';
+                
+                if (products.length === 0) {
+                    container.innerText = 'Каталог пока пуст.';
+                    return;
+                }
 
+                container.innerHTML = '';
                 products.forEach(p => {
                     const card = document.createElement('div');
                     card.className = 'product-card';
                     
-                    // Проверяем, есть ли список фото или одна строка
-                    const photos = Array.isArray(p.photos) ? p.photos : [p.photo_url];
+                    // Берем первое фото из списка или используем photo_url
+                    const photoUrl = Array.isArray(p.photos) ? p.photos[0] : p.photo_url;
                     
-                    let photosHtml = '<div class="photo-grid">';
-                    photos.forEach(url => {
-                        photosHtml += `<img src="${url}" alt="watch">`;
-                    });
-                    photosHtml += '</div>';
-
                     card.innerHTML = `
-                        ${photosHtml}
+                        <div class="photo-container">
+                            <img src="${photoUrl || 'https://via.placeholder.com/150'}" alt="часы">
+                        </div>
                         <h3>${p.name}</h3>
-                        <p class="price">${p.price} stars</p>
+                        <div class="price">${p.price} stars</div>
                     `;
                     container.appendChild(card);
                 });
             } catch (e) {
-                document.getElementById('catalog').innerText = 'Ошибка загрузки каталога.';
+                console.error(e);
+                container.innerText = 'Ошибка загрузки. Проверьте products.json на GitHub.';
             }
         }
         loadProducts();
