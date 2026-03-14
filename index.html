@@ -3,149 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timeless Store - Мужские часы</title>
+    <title>Timeless Store</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --main-color: #d4af37; /* Золотой */
-            --bg-color: #0f0f0f;
-            --card-bg: #1a1a1a;
-            --text-color: #ffffff;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        header {
-            width: 100%;
-            padding: 20px 0;
-            text-align: center;
-            border-bottom: 1px solid #333;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 22px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: var(--main-color);
-        }
-
-        #catalog {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding: 15px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .product-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-            border: 1px solid #222;
-            transition: transform 0.2s;
-        }
-
-        .product-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .product-name {
-            font-size: 14px;
-            font-weight: 500;
-            margin: 8px 0;
-            height: 34px;
-            overflow: hidden;
-        }
-
-        .price {
-            color: var(--main-color);
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-
-        button {
-            background-color: var(--main-color);
-            color: #000;
-            border: none;
-            padding: 10px;
-            width: 100%;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 12px;
-        }
-
-        button:active {
-            transform: scale(0.95);
-            opacity: 0.8;
-        }
-
-        /* Заглушка, когда товаров нет */
-        #empty-msg {
-            display: none;
-            margin-top: 50px;
-            color: #666;
-        }
+        :root { --main-color: #d4af37; --bg-color: #0f0f0f; --card-bg: #1a1a1a; --text-color: #fff; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg-color); color: var(--text-color); margin: 0; padding: 15px; }
+        header { text-align: center; padding: 10px 0; border-bottom: 1px solid #333; margin-bottom: 20px; }
+        header h1 { color: var(--main-color); letter-spacing: 2px; text-transform: uppercase; font-size: 18px; margin: 0; }
+        #catalog { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+        .product-card { background: var(--card-bg); border-radius: 12px; padding: 10px; text-align: center; border: 1px solid #222; }
+        .product-card img { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+        .name { font-size: 13px; height: 32px; overflow: hidden; margin-bottom: 5px; }
+        .price { color: var(--main-color); font-weight: bold; font-size: 15px; margin-bottom: 8px; }
+        button { background: var(--main-color); color: #000; border: none; padding: 8px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-
-    <header>
-        <h1>TIMELESS STORE</h1>
-    </header>
-
-    <div id="catalog">
-        <div class="product-card">
-            <img src="https://via.placeholder.com/200x200?text=Watch" alt="Watch">
-            <div class="product-name">Классическая модель</div>
-            <div class="price">15 000 ₽</div>
-            <button onclick="buyProduct('Классическая модель', 15000)">Купить</button>
-        </div>
-    </div>
-
-    <div id="empty-msg">Каталог обновляется...</div>
+    <header><h1>TIMELESS STORE</h1></header>
+    <div id="catalog">Загрузка товаров...</div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем приложение на весь экран
+        tg.expand();
 
-        // Настройка главной кнопки Telegram
-        tg.MainButton.setParams({
-            text: 'ОФОРМИТЬ ЗАКАЗ',
-            color: '#d4af37',
-            text_color: '#000000'
-        });
+        async function loadProducts() {
+            try {
+                // Добавляем случайное число к ссылке, чтобы браузер не кэшировал старые данные
+                const response = await fetch('products.json?v=' + Math.random());
+                const products = await response.json();
+                const catalog = document.getElementById('catalog');
+                catalog.innerHTML = '';
 
-        function buyProduct(name, price) {
-            // При нажатии на кнопку "Купить" показываем главную кнопку Telegram
-            tg.MainButton.show();
-            // Можно добавить логику сбора товаров в корзину
-            console.log("Выбрано:", name);
+                if (products.length === 0) {
+                    catalog.innerHTML = '<div style="grid-column: 1/3; color: #666;">Товары скоро появятся...</div>';
+                    return;
+                }
+
+                products.forEach(p => {
+                    catalog.innerHTML += `
+                        <div class="product-card">
+                            <img src="${p.photo_url}" alt="Watch">
+                            <div class="name">${p.name}</div>
+                            <div class="price">${p.price} ₽</div>
+                            <button onclick="tg.sendData('order:${p.name}')">КУПИТЬ</button>
+                        </div>`;
+                });
+            } catch (e) {
+                document.getElementById('catalog').innerHTML = 'Добавьте первый товар через бота!';
+            }
         }
-
-        // Обработка нажатия на главную кнопку
-        tg.onEvent('mainButtonClicked', function() {
-            tg.sendData("order_clicked"); // Отправляем сигнал боту
-        });
+        loadProducts();
     </script>
 </body>
 </html>
